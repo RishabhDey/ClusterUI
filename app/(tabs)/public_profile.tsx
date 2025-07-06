@@ -8,6 +8,8 @@ import {
     TouchableOpacity,
     View
 } from "react-native";
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 export default function PublicProfileScreen() {
 
     //KEYS NEED TO BE VIABLE FOR USE AS TITLES!
@@ -85,36 +87,38 @@ export default function PublicProfileScreen() {
 
 
     return(
-        <View>
-            {/* Header with Main Profile Elements */}
+        <SafeAreaView>
             <View>
-                <View style={[styles.profileContainer, getProfileImageStyle()]}>
-                    <Image
-                        source={{ uri: user.profileImage }}
-                        style={[getImageStyle()]}
-                    />
-                </View>
-                <Text>{user.name}</Text>
-                <Text>{user.beats} Beats | {user.followers} Followers | {user.following} Following</Text>
-                {/* Follow Button */}
-                <TouchableOpacity onPress = {Follow}>
-                    <Text>Follow</Text>
-                </TouchableOpacity>
-            </View>
-            <ScrollView>
-
-                {/* User Bio */}
+                {/* Header with Main Profile Elements */}
                 <View>
-                    <Text>Biography</Text>
-                    <Text>{user.bio}</Text>
+                    <View style={[styles.profileContainer, getProfileImageStyle()]}>
+                        <Image
+                            source={{ uri: user.profileImage }}
+                            style={[getImageStyle()]}
+                        />
+                    </View>
+                    <Text>{user.name}</Text>
+                    <Text>{user.beats} Beats | {user.followers} Followers | {user.following} Following</Text>
+                    {/* Follow Button */}
+                    <TouchableOpacity onPress = {Follow}>
+                        <Text>Follow</Text>
+                    </TouchableOpacity>
                 </View>
-                
-                {/*Render all needed Horizontal Sections gained.*/}
-                {renderHorizontalSection()}
+                <ScrollView>
+
+                    {/* User Bio */}
+                    <View>
+                        <Text>Biography</Text>
+                        <Text>{user.bio}</Text>
+                    </View>
+                    
+                    {/*Render all needed Horizontal Sections gained.*/}
+                    {renderHorizontalSection()}
 
 
-            </ScrollView>
-        </View>
+                </ScrollView>
+            </View>
+        </SafeAreaView>
     );
 }
 
