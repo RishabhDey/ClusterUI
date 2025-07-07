@@ -1,49 +1,37 @@
-import { useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { FlatList, KeyboardAvoidingView, Platform, StyleSheet, TextInput, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { AuthContext } from "../context/AuthContext.Jsx";
 import UserBubble from "./UserBubble";
 
 
 
 const chatView = (roomId) => {
+  const {token, login, logout, loading, JWTAccess} = useContext(AuthContext)
 
   const [messages, setMessages] = useState([]);
   const [userStatus, setUserStatus] = useState({}); // { userId: status }
   const [chatInput, setChatInput] = useState('');
-  const [postInput, setPostInput] = useState('');
   const [hasMoreMessages, setHasMoreMessages] = useState(true);
   const ws = useRef(null);
 
-  useEffect(() => {
-    async function initJWT() {
-        try{
-            const refreshResponse = await fetch("/refresh", {credentials: "include"});
-            if(!refreshResponse.ok) {
-                throw new Error("Failed");
-            }
-            const data = await refreshResponse.json()
-            const token = data.accessToken;
-            initChat(roomId, token)
-        } catch (error) {
-            console.error("JWT Token Refresh Failed", error);
-            window.location.href = "/";
-        }
-    }
-    initJWT();
+  const reconnectAttempts = useRef(0);
+  const MAX_RECONNECT_ATTEMPTS = 5;
 
-    return () => {
-      if(ws.socket){
-        ws.socket.close();
-      }
-    }
-  }, []);
 
-  const initChat = (roomId, token) => {
-    //CHANGE LATER
-    ws.socket = new WebSocket(`ws://${window.location.host}/ws/chat/${roomId}?token=${token}`);
+
+  const initChat  = async (token) => {
+
+    if(ws.current){
+      ws.current.close();
+      ws.current = null;
+    }
+
+    ws.socket = new WebSocket(`wss://${window.location.host}/ws/chat/${roomId}?token=${token}`);
 
     ws.socket.onopen = () => {
-    console.log("WebSocket is connected");
+      console.log("WebSocket is connected");
+      reconnectAttempts.current = 0;
     };
 
     ws.socket.onmessage = (event) => {
@@ -60,21 +48,48 @@ const chatView = (roomId) => {
       window.location.href = "/";
     };
 
-    socket.onclose = () => {
-      console.log("WebSocket connection closed");
-    };
+    ws.socket.onclose = async (event) => {
+      console.log("WebSocket connection closed: ", event);
 
-  };
+
+      if(reconnectAttempts > MAX_RECONNECT_ATTEMPTS){
+        logout();
+      }
+
+      reconnectAttempts.current++; 
+
+      const jwt = await JWTAccess();
+
+      if(jwt) {
+        initChat(token);
+      } else {
+        logout();
+      }
+
+    };
+    
+  }
+
 
   //FINISH LATER
   function handleMessage(msg) {
   
   }
 
+  useEffect(() => {
 
-
-
-
+    if (token == null){
+      JWTAccess();
+    }
+    if(!loading){
+      initChat(token);
+    }
+    return () => {
+      if (ws.current) {
+        ws.current.close();
+      }
+    };
+  }, [token, loading]);
 
   const sendChatMessage = () => {
     const text = chatInput.trim();
