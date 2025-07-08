@@ -3,7 +3,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 
 
-const clusterRenderBox = (
+const ClusterRenderBox = (
   { post_id,
     author,
     cluster,

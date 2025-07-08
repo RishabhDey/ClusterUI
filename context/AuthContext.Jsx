@@ -8,6 +8,9 @@ export const AuthProvider = ({children}) => {
   const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const reconnectAttempts = useRef(0);
+  const MAX_RECONNECT_ATTEMPTS = 5;
+
 
   const JWTAccess = async () => {
     try{
@@ -59,7 +62,7 @@ export const AuthProvider = ({children}) => {
 
 
   return (
-    <AuthContext.Provider value = {{token, login, logout, loading, JWTAccess}}>
+    <AuthContext.Provider value = {{token, login, logout, loading, JWTAccess, reconnectAttempts, MAX_RECONNECT_ATTEMPTS}}>
       {children}
     </AuthContext.Provider>
 

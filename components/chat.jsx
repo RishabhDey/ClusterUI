@@ -7,16 +7,14 @@ import UserBubble from "./UserBubble";
 
 
 const chatView = (roomId) => {
-  const {token, login, logout, loading, JWTAccess} = useContext(AuthContext)
+  const {token, logout, loading, JWTAccess,  
+    reconnectAttempts, MAX_RECONNECT_ATTEMPTS} = useContext(AuthContext)
 
   const [messages, setMessages] = useState([]);
   const [userStatus, setUserStatus] = useState({}); // { userId: status }
   const [chatInput, setChatInput] = useState('');
   const [hasMoreMessages, setHasMoreMessages] = useState(true);
   const ws = useRef(null);
-
-  const reconnectAttempts = useRef(0);
-  const MAX_RECONNECT_ATTEMPTS = 5;
 
 
 
@@ -52,7 +50,7 @@ const chatView = (roomId) => {
       console.log("WebSocket connection closed: ", event);
 
 
-      if(reconnectAttempts > MAX_RECONNECT_ATTEMPTS){
+      if(reconnectAttempts.current > MAX_RECONNECT_ATTEMPTS){
         logout();
       }
 
