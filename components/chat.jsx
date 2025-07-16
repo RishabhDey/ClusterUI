@@ -1,19 +1,19 @@
 import { useContext, useState } from "react";
 import { FlatList, KeyboardAvoidingView, Platform, StyleSheet, TextInput, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Routes } from "../constants/routes";
 import { AuthContext } from "../context/AuthContext.Jsx";
 import UserBubble from "./UserBubble";
 
 
-
 const chatView = (roomId) => {
-  const {token, logout, loading, JWTAccess,  
-    reconnectAttempts, MAX_RECONNECT_ATTEMPTS} = useContext(AuthContext)
+  const {token, loading, JWTAccess, withFreshToken} = useContext(AuthContext)
 
   const [messages, setMessages] = useState([]);
-  const [userStatus, setUserStatus] = useState({}); // { userId: status }
+  const [userStatus, setUserStatus] = useState({}); 
   const [chatInput, setChatInput] = useState('');
   const [hasMoreMessages, setHasMoreMessages] = useState(true);
+  const [messageLoading, setMessageLoading] = useState(true);
   const ws = useRef(null);
 
 
@@ -25,11 +25,10 @@ const chatView = (roomId) => {
       ws.current = null;
     }
 
-    ws.socket = new WebSocket(`wss://${window.location.host}/ws/chat/${roomId}?token=${token}`);
+    ws.socket = new WebSocket(`${Routes.ChatCliqueRoutes.WS}/${roomId}?token=${token}`);
 
     ws.socket.onopen = () => {
       console.log("WebSocket is connected");
-      reconnectAttempts.current = 0;
     };
 
     ws.socket.onmessage = (event) => {
@@ -44,28 +43,13 @@ const chatView = (roomId) => {
 
     ws.socket.onerror = (err) => {
       window.location.href = "/";
+      throw new Error();
     };
 
     ws.socket.onclose = async (event) => {
       console.log("WebSocket connection closed: ", event);
-
-
-      if(reconnectAttempts.current > MAX_RECONNECT_ATTEMPTS){
-        logout();
-      }
-
-      reconnectAttempts.current++; 
-
-      const jwt = await JWTAccess();
-
-      if(jwt) {
-        initChat(token);
-      } else {
-        logout();
-      }
-
+      throw new Error();
     };
-    
   }
 
 
@@ -80,14 +64,14 @@ const chatView = (roomId) => {
       JWTAccess();
     }
     if(!loading){
-      initChat(token);
+      withFreshToken(initChat);
     }
     return () => {
       if (ws.current) {
         ws.current.close();
       }
     };
-  }, [token, loading]);
+  }, []);
 
   const sendChatMessage = () => {
     const text = chatInput.trim();
@@ -111,6 +95,11 @@ const chatView = (roomId) => {
       requestOlderMessages();
     }
   };
+
+  const renderHeader = () => {
+      if (!(loading && messageLoading)) return null
+      return <ActivityIndicator/>
+    }
 
 
 
@@ -145,7 +134,8 @@ const chatView = (roomId) => {
               value = {chatInput}
               onChangeText={setChatInput}
               onSubmitEditing={sendChatMessage}
-              returnKeyType = 'send'  
+              returnKeyType = 'send'
+              ListHeaderComponenet = {renderHeader  }  
             />
             <TouchableOpacity onPress={sendChatMessage}>
               <Text>Send</Text>

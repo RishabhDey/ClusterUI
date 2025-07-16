@@ -57,12 +57,36 @@ export const AuthProvider = ({children}) => {
     router.replace("/login");
   };
 
+  const withFreshToken = async (callback) => {
+    const success = true;
+    setLoading(true);
+    try {
+      return await callback(token);
+    } catch (err) {
+      console.warn("Error in token-protected call, trying refresh...");
+
+      reconnectAttempts.current += 1;
+
+      if (reconnectAttempts.current > MAX_RECONNECT_ATTEMPTS) {
+        console.error("Too many reconnect attempts. Logging out.");
+        logout();
+        throw new Error("Session expired.");
+      }
+
+      await JWTAccess();
+
+      return withFreshToken(callback);
+    }finally{
+      setLoading = false;
+    }
+  };
+
 
   useEffect(() => {JWTAccess();},[]);
 
 
   return (
-    <AuthContext.Provider value = {{token, login, logout, loading, JWTAccess, reconnectAttempts, MAX_RECONNECT_ATTEMPTS}}>
+    <AuthContext.Provider value = {{token, login, logout, loading, JWTAccess, reconnectAttempts, MAX_RECONNECT_ATTEMPTS, withFreshToken}}>
       {children}
     </AuthContext.Provider>
 

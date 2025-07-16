@@ -1,5 +1,6 @@
+import Comments from "@components/CommentsRenderBox";
+import { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-
 
 
 
@@ -14,15 +15,21 @@ const ClusterRenderBox = (
     totalLikes,
   }
 ) => {
+  const [commentsVisible, setCommentsVisible] = useState(false);
 
-  const onLike = () => {
-
-  };
-
-  const onComment = () => {
+  //FINISH LATER
+  const onLike = (token) => {
 
   };
 
+  //FINISH LATER
+  const CommentView = () => {
+    return (
+      <Comments post_id = {post_id} visible = {commentsVisible} onClose = {setCommentsVisible}/>
+    )
+  };
+
+  //FINISH LATER
   const onPlay = () => {
 
   }
@@ -58,8 +65,9 @@ const ClusterRenderBox = (
           <TouchableOpacity onPress={onLike()}>
             <Text>Like</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={onComment()}>
-            <Text>Comment</Text>
+
+          <TouchableOpacity onPress={CommentView()}>
+            <Text>Comments</Text>
           </TouchableOpacity>
 
         </View>

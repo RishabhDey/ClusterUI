@@ -6,8 +6,7 @@ import { FlatList } from "react-native-gesture-handler";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
   export default function ClusterFYP(){
-    const {token, logout, loading, JWTAccess,
-      reconnectAttempts, MAX_RECONNECT_ATTEMPTS
+    const {token, loading, JWTAccess, withFreshToken
     } = useContext(AuthContext)
 
     const [clusters, setClusters] = useState([]);
@@ -23,45 +22,32 @@ import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
     const itemHeight = screenHeight - insets.top - insets.bottom;
 
     const fetchClusters = async (id) => {
-      try{
-        if (loadingClusters || !valid) return;
-        if (!token) return;
+      if (loadingClusters || !valid) return;
+      if (!token) return;
 
 
-        setLoadingClusters(true);
-        //CHANGE LATER
-        const res = await fetch("https://cluster.com/api/clusters", {
-          method: "GET",
-          headers: {
-            "Authorization": token,
-            "PrevClusterID": id
-          }
-        })
-
-        if(!res.ok) {
-          reconnectAttempts.current++
-
-          if(reconnectAttempts > MAX_RECONNECT_ATTEMPTS){
-          logout();
-          }
-          await JWTAccess();
-          fetchClusters(id);
+      setLoadingClusters(true);
+      //CHANGE LATER
+      const res = await fetch("https://cluster.com/api/cluster", {
+        method: "GET",
+        headers: {
+          "Authorization": token,
+          "PrevClusterID": id
         }
+      })
 
-        reconnectAttempts.current = 0;
-
-        const data = await res.json();
-
-        if (data.length === 0) {
-          setValid(false);
-        } else {
-          setClusters((prev) => [...prev, ...data]);
-        }
-      }catch (error) {
-        console.error("Error fetching clusters:", error);
-      }finally{
-        setLoadingClusters(false);
+      if(!res.ok) {
+        throw new Error();
       }
+
+      const data = await res.json();
+
+      if (data.length === 0) {
+        setValid(false);
+      } else {
+        setClusters((prev) => [...prev, ...data]);
+      }
+      setLoadingClusters(false);
     }
 
     const loadMore = () => {
@@ -74,9 +60,9 @@ import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
       if (token == null){
         JWTAccess();
       }
-      fetchClusters(null);
+      withFreshToken(fetchClusters(null));
       return; 
-    }, [token, loading])
+    }, [])
 
     const renderFooter = () => {
       if (!loading) return null
