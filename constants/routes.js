@@ -11,6 +11,8 @@ export const Routes = {
     onLike: "",
     onPlay: "",
     getClusterPost: "",
+    getClusters: "",
+    getFollowing: "",
   },
   CommentRoutes: {
     getComments: "",

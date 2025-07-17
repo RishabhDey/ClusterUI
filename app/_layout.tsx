@@ -1,10 +1,10 @@
-import { AuthProvider } from '@/context/AuthContext';
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { AuthProvider } from '../context/AuthContext';
+import { ClusterThemeProvider } from '../context/ThemeContext';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 
@@ -22,14 +22,18 @@ export default function RootLayout() {
   return (
     <AuthProvider>
       <SafeAreaProvider>
-        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+        <ClusterThemeProvider>
           <Stack>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="profile/[username]" options={{ title: 'Profile' }} />
+            <Stack.Screen name="achievements" />
+            <Stack.Screen name="settings" />
+            <Stack.Screen name="leaderboards" />
+            <Stack.Screen name="login" />
             <Stack.Screen name="+not-found" />
           </Stack>
           <StatusBar style="auto" />
-        </ThemeProvider>
+        </ClusterThemeProvider>
       </SafeAreaProvider>
     </AuthProvider>
   );

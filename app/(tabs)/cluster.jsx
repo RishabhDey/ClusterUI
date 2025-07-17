@@ -5,9 +5,13 @@ import { ActivityIndicator, Dimensions, View } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
+const {theme} = useContext(AuthContext)
+
   export default function ClusterFYP(){
     const {token, loading, JWTAccess, withFreshToken
     } = useContext(AuthContext)
+
+    
 
     const [clusters, setClusters] = useState([]);
     const [loadingClusters, setLoadingClusters] = useState(false);
