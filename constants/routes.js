@@ -21,5 +21,12 @@ export const Routes = {
   ChatCliqueRoutes: {
     sendChat: "",
     WS: "",
+  },
+  AuthRoutes: {
+    accessToken: "",
+    login: ""
+  },
+  StaticRoutes: {
+    achievements: "",
   }
 };

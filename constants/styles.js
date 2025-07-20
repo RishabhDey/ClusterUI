@@ -73,10 +73,12 @@ export const ThemedStyles = (theme) => {
       color: theme.secondaryText
     },
     defaultView: {
-      backgroundColor: theme.background
+      backgroundColor: theme.background,
+      borderRadius: 5
     },
     secondaryView: {
-      backgroundColor: theme.secondaryBackground
+      backgroundColor: theme.secondaryBackground,
+      borderRadius: 5
     } 
   }));
 

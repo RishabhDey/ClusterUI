@@ -1,26 +1,53 @@
+import Routes from '..constants/Routes';
 import { router } from "expo-router";
+import * as SecureStore from "expo-secure-store";
 import { createContext, useEffect, useState } from "react";
-
-
+import { Platform } from "react-native";
 export const AuthContext = createContext();
 
 export const AuthProvider = ({children}) => {
   const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const isMobile = (Platform.OS !== "web");
+
   const reconnectAttempts = useRef(0);
   const MAX_RECONNECT_ATTEMPTS = 5;
 
 
+
+  //ONLY FOR NATIVE APPS
+  const getRefreshToken = async () => {
+    if (Platform.OS === 'web') {
+      return null;
+    } else {
+      return await SecureStore.getItemAsync('refresh_token');
+    }
+  };
+
+
   const JWTAccess = async () => {
+    const refreshToken = isMobile ? await getRefreshToken() : null;
+
     try{
-      const refreshResponse = await fetch("/refresh", {credentials: "include"});
-      
+      const refreshResponse = await fetch(Routes.AuthRoutes.accessToken, 
+        {method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              ...(isMobile && { 'X-Client-Type': 'mobile' })
+            },
+            ...(isMobile
+              ? { body: JSON.stringify({ refreshToken }) }
+              : { credentials: 'include' }) // include cookie
+          });
+
       if(!refreshResponse.ok) {
                 throw new Error("Failed");
       }
+
       const data = await refreshResponse.json();
       setToken(data.accessToken);
+
     } catch (e) {
       console.error("JWT Token Refresh Failed", e);
       //change later. 
@@ -31,17 +58,34 @@ export const AuthProvider = ({children}) => {
     }
   }
 
+
+
+
+
+  //LOGIN will save to cookies if web, else save to SecureStorage. 
   const login = async (username, password) => {
     try{
-      const res = await fetch( '/login',
+      const res = await fetch( Routes.AuthRoutes.login,
         {
           method: "POST",
-          credentials: "include",
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json' ,
+            ...(isMobile ? {'Client': 'mobile'} : {'Client': 'Web'})
+          },
           body: JSON.stringify({ username, password }),
+          ...(isMobile ? {} : {credentials: "include",})
         }
-      )
+      );
+
+
       if(!res.ok) throw new Error("Login Failed.")
+
+      if(isMobile){
+        const data = await res.json();
+        await SecureStore.setItemAsync('refreshToken', data)
+      }
+       
+
+
     }catch(e){
       console.log("Login Failed: ", e)
     }
