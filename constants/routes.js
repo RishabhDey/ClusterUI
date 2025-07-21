@@ -18,6 +18,9 @@ export const Routes = {
     getComments: "",
     onComment: "",
   }, 
+  CliqueRoutes: {
+    getCliques: "",
+  },
   ChatCliqueRoutes: {
     sendChat: "",
     WS: "",

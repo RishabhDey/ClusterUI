@@ -55,6 +55,18 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
         }}
       />
+
+      <Tabs.Screen name="profile/[username]" options={{ href: null}} />
+
+      <Tabs.Screen name="chat/[room]" options={{ href: null }} />
+
+      <Tabs.Screen name="achievements" options={{ href: null }} />
+
+      <Tabs.Screen name="settings" options={{ href: null }}  />
+
+      <Tabs.Screen name="leaderboards" options={{ href: null }}  />
+
+
     </Tabs>
   );
 }

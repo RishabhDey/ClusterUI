@@ -1,11 +1,13 @@
 import Routes from '..constants/Routes';
 import { router } from "expo-router";
-import * as SecureStore from "expo-secure-store";
 import { createContext, useEffect, useState } from "react";
 import { Platform } from "react-native";
+import { StorageContext } from '../context/StorageContext';
+
 export const AuthContext = createContext();
 
 export const AuthProvider = ({children}) => {
+  const {setRefreshToken, getRefreshToken} = useContext(StorageContext)
   const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -16,14 +18,7 @@ export const AuthProvider = ({children}) => {
 
 
 
-  //ONLY FOR NATIVE APPS
-  const getRefreshToken = async () => {
-    if (Platform.OS === 'web') {
-      return null;
-    } else {
-      return await SecureStore.getItemAsync('refresh_token');
-    }
-  };
+  
 
 
   const JWTAccess = async () => {
@@ -81,7 +76,7 @@ export const AuthProvider = ({children}) => {
 
       if(isMobile){
         const data = await res.json();
-        await SecureStore.setItemAsync('refreshToken', data)
+        setRefreshToken(data);
       }
        
 

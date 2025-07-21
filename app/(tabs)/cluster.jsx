@@ -8,7 +8,7 @@ import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 const {theme} = useContext(AuthContext)
 
   export default function ClusterFYP(){
-    const {token, loading, JWTAccess, withFreshToken
+    const {loading, JWTAccess, withFreshToken
     } = useContext(AuthContext)
 
     
@@ -25,7 +25,7 @@ const {theme} = useContext(AuthContext)
     const insets = useSafeAreaInsets();
     const itemHeight = screenHeight - insets.top - insets.bottom;
 
-    const fetchClusters = async (id) => {
+    const fetchClusters = async (id, token) => {
       if (loadingClusters || !valid) return;
       if (!token) return;
 
@@ -64,12 +64,12 @@ const {theme} = useContext(AuthContext)
       if (token == null){
         JWTAccess();
       }
-      withFreshToken(fetchClusters(null));
+      withFreshToken(fetchClusters(id = null));
       return; 
     }, [])
 
     const renderFooter = () => {
-      if (!loading) return null
+      if (!loading && !loadingClusters) return null
       return <ActivityIndicator/>
     }
 

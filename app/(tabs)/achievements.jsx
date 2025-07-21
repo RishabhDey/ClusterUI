@@ -1,25 +1,21 @@
 import { Routes } from "..constants/Routes";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function AchievementsStaticPage () {
+
   const [achievements, loading, setAchievements] = useState([]);
-  const {withFreshToken} = useContext(AuthContext);
   const {id, setId} = useState(null);
   const [loadingAchievements, setLoadingAchievements] = useState(false);
   const [valid, setValid] = useState(true);
 
 
-  const fetchAchievements  = async (token) => {
+  const fetchAchievements  = async () => {
     if(loading || loadingAchievements || !valid) return; 
 
     const res = await fetch(Routes.StaticRoutes.achievements, {
         method: "GET",
-        headers: {
-          "Authorization": token,
-          "PrevClusterID": id || ""
-        }
       })
 
       if(!res.ok) {
@@ -37,7 +33,7 @@ export default function AchievementsStaticPage () {
   };
 
   useEffect(() => {
-    withFreshToken(fetchAchievements);
+   fetchAchievements();
   }, []);
 
   const renderItem = ({ item }) => (
