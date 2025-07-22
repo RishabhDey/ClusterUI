@@ -67,6 +67,6 @@ export default function AchievementsStaticPage () {
           ListFooterComponent={ListFooter}
         />
       </View>
-    </SafeAreaView>
+    </SafeAreaView> 
   )
 };

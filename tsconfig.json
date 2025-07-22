@@ -13,5 +13,5 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
-, "app/(tabs)/following.jsx", "app/(tabs)/cluster.jsx", "app/(tabs)/public_profile.jsx", "constants/styles.js"  ]
+, "app/(tabs)/following.jsx", "app/(tabs)/cluster.jsx", "app/(tabs)/public_profile.jsx", "constants/styles.js", "app/(tabs)/clique.jsx"  ]
 }

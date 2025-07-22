@@ -22,7 +22,6 @@ const ClusterRenderBox = (
 
   };
 
-  //FINISH LATER
   const CommentView = () => {
     return (
       <Comments post_id = {post_id} visible = {commentsVisible} onClose = {setCommentsVisible}/>
