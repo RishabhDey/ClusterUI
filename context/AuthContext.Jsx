@@ -16,20 +16,17 @@ export const AuthProvider = ({children}) => {
   const reconnectAttempts = useRef(0);
   const MAX_RECONNECT_ATTEMPTS = 5;
 
-
-
-  
-
-
   const JWTAccess = async () => {
     const refreshToken = isMobile ? await getRefreshToken() : null;
+    
 
+    //Check Mobile --> If mobile: use body --> If not mobile --> use cred; if cred fails, throw error
     try{
       const refreshResponse = await fetch(Routes.AuthRoutes.accessToken, 
         {method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              ...(isMobile && { 'X-Client-Type': 'mobile' })
+              ...(isMobile ? {'Client': 'Mobile'} : {'Client': 'Web'})
             },
             ...(isMobile
               ? { body: JSON.stringify({ refreshToken }) }

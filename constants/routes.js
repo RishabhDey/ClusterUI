@@ -27,7 +27,9 @@ export const Routes = {
   },
   AuthRoutes: {
     accessToken: "",
-    login: ""
+    login: "",
+    register: "",
+    forgottenPassword: "",
   },
   StaticRoutes: {
     achievements: "",

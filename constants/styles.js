@@ -81,6 +81,4 @@ export const ThemedStyles = (theme) => {
       borderRadius: 5
     } 
   }));
-
-  
 };

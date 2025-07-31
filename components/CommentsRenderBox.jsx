@@ -6,18 +6,19 @@ import { ActivityIndicator, KeyboardAvoidingView, Modal, TextInput, TouchableOpa
 import { FlatList } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-export default function Comments({ visible, onClose, post_id }){
+export default function Comments({ visible, onClose, post_id, init_comment_id}){
   const [commentInput, setCommentInput] = useState('');
   const [comments, setComments] = useState([]);
   const {loading, withFreshToken} = useContext(AuthContext)
   const [loadingMore, setLoadingMore] = useState(false);
 
   const initComments = async() => {
-    const res = await fetch(`${Routes.CommentRoutes.getComments}?post_id=${post_id}&prev_comment_id=-1`);
+    const res = await fetch(`${Routes.CommentRoutes.getComments}?post_id=${post_id}&prev_comment_id=${init_comment_id}`);
     const data = await res.json();
     setComments(data.comments);
-
   };
+
+
   useEffect(() => {
     initComments();
   }, [post_id]);
@@ -39,7 +40,8 @@ export default function Comments({ visible, onClose, post_id }){
     const res = await fetch(Routes.CommentRoutes.onComment, {
       method: "POST",
       headers: {
-        "Authorization": token
+        "Authorization": token,
+        "Cluster_id": post_id
       },
       body: JSON.stringify({post_id, text: commentInput}), 
     });
@@ -53,13 +55,25 @@ export default function Comments({ visible, onClose, post_id }){
      
   };
 
+
+  //HANDLE LATER
+  const getReplies = async(id) => {
+    return;
+  }
+
+
+
   const renderItem = ({ item }) => (
-    <UserBubble
-      author={item.author}
-      time={item.time}
-      message={item.message}
-      profileImage={item.profileImage}
-    />
+    <View>
+      <UserBubble
+        author={item.author}
+        time={item.time}
+        message={item.message}
+        profileImage={item.profileImage}
+      />
+      {item.hasReplies && <TouchableOpacity onPress={getReplies(item.id)}>View Reply</TouchableOpacity>}
+      
+    </View>
   );
 
   const renderFooter = () => {

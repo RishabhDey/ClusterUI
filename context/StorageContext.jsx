@@ -1,4 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as SecureStore from "expo-secure-store";
 import { createContext } from "react";
 import { Platform } from "react-native";
 
@@ -38,19 +39,12 @@ export const StorageProvider = ({ children }) => {
 
   //ONLY FOR NATIVE APPS
   const getRefreshToken = async () => {
-    if (Platform.OS === 'web') {
-      return null;
-    } else {
-      return await SecureStore.getItemAsync('refresh_token');
-    }
+    return isMobile ? await SecureStore.getItemAsync('refresh_token') : null; 
   };
 
   const setRefreshToken = async (data) => {
-    isMobile ? await SecureStore.setItemAsync('refreshToken', data): null;
-  }
-
-
-
+    return isMobile ? await SecureStore.setItemAsync('refreshToken', data): null;
+  };
 
   return(
     <StorageContext.Provider value = {{setLastViewedMessage, 
